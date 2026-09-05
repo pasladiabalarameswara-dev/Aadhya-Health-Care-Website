@@ -146,7 +146,7 @@ function About() {
 }
 
 function Doctors() {
-  return <section className="section section-tint" id="doctors"><div className="container"><div className="section-head"><div><div className="section-kicker">The people behind the care</div><h2>Meet a team you can trust.</h2></div><p className="section-intro">Experienced specialists, thoughtful nurses, and a front desk that knows your name — here to make the next step feel easier.</p></div><div className="doctors-grid">{doctors.map((doctor, index) => <article className={`doctor-card ${index === 0 ? 'featured' : ''}`} key={doctor.name}><img src={doctor.photo} alt={doctor.name} /><div className="doctor-info"><h3>{doctor.name}</h3><p>{doctor.speciality}</p><div className="doctor-tags">{doctor.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div></div></article>)}</div></div></section>;
+  return <section className="section section-tint" id="doctors"><div className="container"><div className="section-head"><div><div className="section-kicker">The people behind the care</div><h2>Our care team.</h2></div><p className="section-intro">Experienced specialists, thoughtful nurses, and a front desk that knows your name — here to make the next step feel easier.</p></div><div className="doctors-grid">{doctors.map((doctor, index) => <article className={`doctor-card ${index === 0 ? 'featured' : ''}`} key={doctor.name}><img src={doctor.photo} alt={doctor.name} /><div className="doctor-info"><h3>{doctor.name}</h3><p>{doctor.speciality}</p><div className="doctor-tags">{doctor.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div></div></article>)}</div></div></section>;
 }
 
 function Stories() {
