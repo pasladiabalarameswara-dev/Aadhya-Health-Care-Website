@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -8,26 +8,40 @@ import {
   ArrowRight,
   Baby,
   Bed,
-  CalendarDays,
   Check,
   Clock3,
   HeartHandshake,
   HeartPulse,
   Hospital,
-  Mail,
+  LockKeyhole,
   MapPin,
   Menu,
   Phone,
   ShieldCheck,
   Stethoscope,
   Syringe,
+  Users,
   UsersRound,
   X,
 } from 'lucide-react';
- import { Link, Route, Switch, useLocation, useRoute, Router as WouterRouter } from 'wouter';
+ import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import './index.css';
 
 const queryClient = new QueryClient();
+const APPOINTMENTS_KEY = 'aadhya-healthcare-appointments';
+const ADMIN_SESSION_KEY = 'aadhya-healthcare-admin-session';
+const ADMIN_ID = 'admin@aadhyahospital.in';
+const ADMIN_PASSWORD = 'Aadhya@2025!';
+
+type AppointmentRecord = {
+  id: string;
+  name: string;
+  phone: string;
+  department: string;
+  date: string;
+  message: string;
+  submittedAt: string;
+};
 
 const services = [
   { slug: 'general-medicine', title: 'General Medicine', copy: 'Thoughtful care for everyday health, chronic conditions, and the questions in between.', icon: Stethoscope, detail: 'Personalised primary care for everyday concerns, long-term conditions, preventive screenings, and the questions that do not always fit neatly into one diagnosis.', highlights: ['Routine health checks', 'Diabetes and blood pressure care', 'Preventive screening guidance'] },
@@ -37,8 +51,6 @@ const services = [
   { slug: 'womens-health', title: 'Women’s Health', copy: 'A private, supportive space for complete health across every life stage.', icon: HeartHandshake, detail: 'Respectful, private support for women through changing health needs, with clear guidance and a team that listens without rushing.', highlights: ['Women’s wellness consultations', 'Preventive screenings', 'Life-stage health guidance'] },
   { slug: 'emergency-care', title: 'Emergency Care', copy: 'A calm, capable team available around the clock when every minute matters.', icon: Syringe, detail: 'Round-the-clock emergency support for urgent needs, with a calm first response and connected hospital care when every minute matters.', highlights: ['24/7 emergency response', 'Urgent assessment and triage', 'Connected diagnostics and care'] },
 ];
-
-const insurancePartners = ['HDFC ERGO', 'Star Health', 'Care Health', 'Niva Bupa', 'ICICI Lombard', 'Bajaj Allianz', 'Aditya Birla Health', 'ManipalCigna'];
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,15 +62,14 @@ function Header() {
           <span><MapPin size={13} /> 8-2-277, Airsft Colony, Naigaon</span>
           <div className="topbar-right">
             <a href="tel:+917337335096"><Phone size={13} /> +91 73373 35096</a>
-            <a href="mailto:care@aadhyahealthcare.in"><Mail size={13} /> care@aadhyahealthcare.in</a>
           </div>
         </div>
       </div>
       <header className="nav">
         <div className="container nav-inner">
-          <Link href="/" className="brand" onClick={closeMenu} aria-label="Aadhya Health Care home">
+          <Link href="/" className="brand" onClick={closeMenu} aria-label="Aadhya Health Care and Greenlands Hospital home">
             <span className="brand-mark">A</span>
-            <span className="brand-copy"><strong>AADHYA</strong><small>HEALTH CARE</small></span>
+            <span className="brand-copy"><strong>AADHYA HEALTH CARE</strong><small>GREENLANDS HOSPITAL</small></span>
           </Link>
           <nav className={`nav-links ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">
             <a href="/#about" onClick={closeMenu}>About us</a>
@@ -102,7 +113,21 @@ function BookingForm({ compact = false }: { compact?: boolean }) {
     if (!form.department) nextErrors.department = 'Choose a department';
     if (!form.date) nextErrors.date = 'Choose a preferred date';
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length === 0) setSubmitted(true);
+    if (Object.keys(nextErrors).length === 0) {
+      const newRecord: AppointmentRecord = {
+        id: `REQ-${Date.now()}`,
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        department: form.department,
+        date: form.date,
+        message: form.message.trim(),
+        submittedAt: new Date().toISOString(),
+      };
+      const saved = localStorage.getItem(APPOINTMENTS_KEY);
+      const existing: AppointmentRecord[] = saved ? JSON.parse(saved) : [];
+      localStorage.setItem(APPOINTMENTS_KEY, JSON.stringify([newRecord, ...existing]));
+      setSubmitted(true);
+    }
   };
   if (submitted) {
     return <div className="confirmation"><div className="confirmation-mark"><Check size={31} strokeWidth={3} /></div><h3>Request received</h3><p>Thank you, {form.name.split(' ')[0] || 'there'}. Our care coordinator will call you on <strong>{form.phone}</strong> shortly to confirm your visit.</p><button className="btn btn-outline" onClick={() => { setSubmitted(false); setForm({ name: '', phone: '', department: '', date: '', message: '' }); }}>Book another visit</button></div>;
@@ -123,20 +148,20 @@ function Hero() {
     <div className="reveal">
       <span className="eyebrow">Care that comes closer</span>
       <h1>Good health begins with <em>feeling cared for.</em></h1>
-      <p className="hero-lede">Aadhya Health Care brings experienced doctors, thoughtful teams, and modern treatment together — so your family can get back to what matters.</p>
-      <div className="hero-ctas"><Link href="/appointment" className="btn btn-primary">Find your care team <ArrowRight size={16} /></Link><a href="tel:+917337335096" className="btn btn-outline"><Phone size={16} /> Talk to a coordinator</a></div>
+       <p className="hero-lede">Aadhya Health Care and Greenlands Hospital brings experienced doctors, thoughtful teams, and modern treatment together — so your family can get back to what matters.</p>
+       <div className="hero-ctas"><Link href="/appointment" className="btn btn-primary">Book a consultation <ArrowRight size={16} /></Link><a href="tel:+917337335096" className="btn btn-outline"><Phone size={16} /> Talk to a coordinator</a></div>
       <div className="hero-note"><ShieldCheck size={16} /> Trusted care for families across Naigaon and beyond</div>
     </div>
-    <div className="hero-visual reveal delay-1"><img className="building-image" src="/hospital-building-replacement.png" alt="Aadhya Health Care hospital exterior" /><div className="emergency-pill">24/7 <span>Emergency support</span></div><div className="visual-badge"><HeartPulse size={22} /><div><strong>20+</strong><span>specialities under one roof</span></div></div></div>
+     <div className="hero-visual reveal delay-1"><img className="building-image" src="/aadhya-hospital-upload.jpg" alt="Aadhya Health Care and Greenlands Hospital exterior" /><div className="emergency-pill">24/7 <span>Emergency support</span></div><div className="visual-badge"><HeartPulse size={22} /><div><strong>20+</strong><span>specialities under one roof</span></div></div></div>
   </div></section>;
 }
 
 function Services() {
-  return <section className="section section-tint" id="services"><div className="container"><div className="section-head"><div><div className="section-kicker">Care for every chapter</div><h2>Specialities that listen first.</h2></div><p className="section-intro">Explore the care areas available at Aadhya, then learn more about the support each team provides.</p></div><div className="services-grid">{services.map(({ title, icon: Icon, slug }, index) => <article className="service-card reveal" style={{ animationDelay: `${index * 70}ms` }} key={title}><div className="service-icon"><Icon size={22} /></div><h3>{title}</h3><Link className="learn-more" href={`/specialities/${slug}`}>Learn more <ArrowRight size={15} /></Link></article>)}</div></div></section>;
+  return <section className="section section-tint" id="services"><div className="container"><div className="section-head"><div><div className="section-kicker">Care for every chapter</div><h2>Specialities that listen first.</h2></div><div><p className="section-intro">Explore the care areas available at Aadhya, then learn more about the support each team provides.</p><Link className="text-link" href="/specialities">Learn more <ArrowRight size={15} /></Link></div></div><div className="services-grid">{services.map(({ title, icon: Icon }, index) => <article className="service-card reveal" style={{ animationDelay: `${index * 70}ms` }} key={title}><div className="service-icon"><Icon size={22} /></div><h3>{title}</h3></article>)}</div></div></section>;
 }
 
 function InsurancePartners() {
-  return <section className="section insurance-section" id="insurance"><div className="container"><div className="section-head"><div><div className="section-kicker">Cashless care, made easier</div><h2>Cashless insurance partners.</h2></div><p className="section-intro">We work with leading health insurance providers to help make your hospital journey simpler from the start.</p></div><div className="insurance-grid">{insurancePartners.map((partner) => <div className="insurance-card" key={partner}><ShieldCheck size={18} /><span>{partner}</span></div>)}</div></div></section>;
+  return <section className="insurance-image-section" id="insurance"><div className="container"><img src="/cashless-insurance-partners.jpg" alt="Cashless insurance partners" /></div></section>;
 }
 
 function Stories() {
@@ -144,12 +169,8 @@ function Stories() {
   return <section className="section" id="stories"><div className="container"><div className="section-head"><div><div className="section-kicker">In their own words</div><h2>Care you can feel.</h2></div><p className="section-intro">Trust is built in small moments — a clear answer, an extra minute, a hand held when it matters.</p></div><div className="testimonials">{stories.map((story) => <article className="quote-card" key={story.name}><div className="stars">★★★★★</div><p>“{story.quote}”</p><footer><span className="quote-avatar">{story.name[0]}</span><div><strong>{story.name}</strong><small>{story.detail}</small></div></footer></article>)}</div></div></section>;
 }
 
-function SpecialtyPage() {
-  const [, params] = useRoute('/specialities/:slug');
-  const service = services.find((item) => item.slug === params?.slug);
-  if (!service) return <NotFound />;
-  const Icon = service.icon;
-  return <div className="appointment-page"><Header /><main className="specialty-page"><div className="container"><Link href="/" className="appointment-back"><ArrowLeft size={15} /> Back to Aadhya Health Care</Link><div className="specialty-hero"><div><div className="service-icon"><Icon size={25} /></div><div className="section-kicker">Aadhya speciality care</div><h1>{service.title}</h1><p>{service.detail}</p><Link href="/appointment" className="btn btn-primary">Book an appointment <ArrowRight size={16} /></Link></div><div className="specialty-panel"><span>What we help with</span><ul>{service.highlights.map((highlight) => <li key={highlight}><Check size={16} />{highlight}</li>)}</ul></div></div></div></main><Footer /></div>;
+function SpecialitiesPage() {
+  return <div className="appointment-page"><Header /><main className="specialty-page"><div className="container"><Link href="/" className="appointment-back"><ArrowLeft size={15} /> Back to Aadhya Health Care</Link><div className="section-head"><div><div className="section-kicker">Aadhya Health Care and Greenlands Hospital</div><h1>Our specialities.</h1></div><p className="section-intro">Find the right department for your next step.</p></div><div className="specialty-list">{services.map(({ title, detail, highlights, icon: Icon }) => <article className="specialty-detail-card" key={title}><div className="service-icon"><Icon size={22} /></div><div><h2>{title}</h2><p>{detail}</p><ul>{highlights.map((highlight) => <li key={highlight}><Check size={15} />{highlight}</li>)}</ul></div><Link className="btn btn-primary specialty-book" href="/appointment">Book appointment <ArrowRight size={15} /></Link></article>)}</div></div></main><Footer /></div>;
 }
 
 function AppointmentBand() {
@@ -157,11 +178,11 @@ function AppointmentBand() {
 }
 
 function Contact() {
-  return <section className="section" id="contact"><div className="container"><div className="contact-panel"><div><div className="section-kicker">We’re easy to find</div><h2>Come in. We’ll take it from here.</h2><p>Visit us at 8-2-277, Airsft Colony, Naigaon — or call for directions, appointment help, and emergency support.</p></div><div className="contact-actions"><a className="btn btn-primary" href="tel:+917337335096"><Phone size={16} /> Call the hospital</a><a className="btn btn-outline" href="mailto:care@aadhyahealthcare.in"><Mail size={16} /> Email us</a></div></div></div></section>;
+  return <section className="section" id="contact"><div className="container"><div className="contact-panel"><div><div className="section-kicker">We’re easy to find</div><h2>Come in. We’ll take it from here.</h2><p>Visit us at 8-2-277, Airsft Colony, Naigaon — or call for directions, appointment help, and emergency support.</p></div><div className="contact-actions"><a className="btn btn-primary" href="tel:+917337335096"><Phone size={16} /> Call the hospital</a></div></div></div></section>;
 }
 
 function Footer() {
-  return <footer className="footer"><div className="container"><div className="footer-grid"><div><Link href="/" className="brand"><span className="brand-mark">A</span><span className="brand-copy"><strong>AADHYA</strong><small>HEALTH CARE</small></span></Link><p>Modern multi-specialty care close to home.</p></div><div><h4>Explore</h4><ul><li><a href="/#services">Specialities</a></li><li><a href="/#insurance">Insurance partners</a></li><li><a href="/#stories">Patient stories</a></li></ul></div><div><h4>Patients</h4><ul><li><Link href="/appointment">Book an appointment</Link></li><li><a href="tel:+917337335096">Emergency support</a></li><li><a href="/#contact">Find us</a></li></ul></div><div><h4>Get in touch</h4><div className="footer-contact"><MapPin size={15} />8-2-277, Airsft Colony,<br />Naigaon - 500891</div><div className="footer-contact"><Phone size={15} /><a href="tel:+917337335096">+91 73373 35096</a></div><div className="footer-contact"><Mail size={15} /><a href="mailto:care@aadhyahealthcare.in">care@aadhyahealthcare.in</a></div></div></div><div className="footer-bottom"><span>© 2025 Aadhya Health Care. Care, close to home.</span><span>Privacy · Terms</span></div></div></footer>;
+  return <footer className="footer"><div className="container"><div className="footer-grid"><div><Link href="/" className="brand"><span className="brand-mark">A</span><span className="brand-copy"><strong>AADHYA HEALTH CARE</strong><small>GREENLANDS HOSPITAL</small></span></Link><p>Modern multi-specialty care close to home.</p></div><div><h4>Explore</h4><ul><li><Link href="/specialities">Specialities</Link></li><li><a href="/#insurance">Insurance partners</a></li><li><a href="/#stories">Patient stories</a></li></ul></div><div><h4>Patients</h4><ul><li><Link href="/appointment">Book an appointment</Link></li><li><a href="tel:+917337335096">Emergency support</a></li><li><a href="/#contact">Find us</a></li></ul></div><div><h4>Get in touch</h4><div className="footer-contact"><MapPin size={15} />8-2-277, Airsft Colony,<br />Naigaon - 500891</div><div className="footer-contact"><Phone size={15} /><a href="tel:+917337335096">+91 73373 35096</a></div><div className="footer-admin-link"><LockKeyhole size={15} /><Link href="/admin">Admin portal</Link></div></div></div><div className="footer-bottom"><span>© 2025 Aadhya Health Care and Greenlands Hospital.</span><span>Privacy · Terms</span></div></div></footer>;
 }
 
 function Home() {
@@ -172,8 +193,45 @@ function AppointmentPage() {
   return <div className="appointment-page"><Header /><main className="appointment-hero"><div className="container"><Link href="/" className="appointment-back"><ArrowLeft size={15} /> Back to Aadhya Health Care</Link><div className="section-head"><div><div className="section-kicker">Your care, your pace</div><h2>Start with a conversation.</h2></div><p className="section-intro">Share a few details and our care coordinator will call you to confirm the best appointment for your needs.</p></div><div className="booking-card"><h3>Book your appointment</h3><p>We usually respond within 30 minutes during hospital hours.</p><BookingForm /></div></div></main><Footer /></div>;
 }
 
+function AdminPage() {
+  const [loggedIn, setLoggedIn] = useState(() => sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true');
+  const [adminId, setAdminId] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [requests, setRequests] = useState<AppointmentRecord[]>([]);
+
+  const loadRequests = () => {
+    const saved = localStorage.getItem(APPOINTMENTS_KEY);
+    setRequests(saved ? JSON.parse(saved) : []);
+  };
+
+  useEffect(() => {
+    if (loggedIn) loadRequests();
+  }, [loggedIn]);
+
+  const login = (event: FormEvent) => {
+    event.preventDefault();
+    if (adminId.trim() === ADMIN_ID && password === ADMIN_PASSWORD) {
+      sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
+      setLoggedIn(true);
+      setLoginError('');
+      setPassword('');
+      return;
+    }
+    setLoginError('The admin ID or password is incorrect.');
+  };
+
+  const logout = () => {
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    setLoggedIn(false);
+    setAdminId('');
+  };
+
+  return <div className="appointment-page"><Header /><main className="admin-page"><div className="container"><Link href="/" className="appointment-back"><ArrowLeft size={15} /> Back to Aadhya Health Care</Link>{loggedIn ? <><div className="admin-heading"><div><div className="section-kicker">Private admin area</div><h1>Appointment requests.</h1><p>Review visitors who have requested a call from the hospital.</p></div><div className="admin-actions"><button className="btn btn-outline" onClick={loadRequests}><ArrowRight size={15} /> Refresh</button><button className="btn btn-teal" onClick={logout}>Log out</button></div></div><div className="admin-summary"><Users size={20} /><strong>{requests.length}</strong><span>{requests.length === 1 ? 'request received' : 'requests received'}</span></div>{requests.length === 0 ? <div className="admin-empty"><LockKeyhole size={25} /><h2>No requests yet.</h2><p>New appointment requests will appear here.</p></div> : <div className="request-list">{requests.map((request) => <article className="request-card" key={request.id}><div><span className="request-id">{request.id}</span><h2>{request.name}</h2><p>{request.department} · Preferred date: {request.date}</p>{request.message && <blockquote>{request.message}</blockquote>}</div><div className="request-contact"><a href={`tel:${request.phone}`}>{request.phone}</a><small>{new Date(request.submittedAt).toLocaleString()}</small></div></article>)}</div>}</> : <div className="admin-login-layout"><div className="admin-login-copy"><div className="section-kicker">Restricted access</div><h1>Admin portal.</h1><p>Sign in to view appointment requests sent through the website.</p></div><form className="admin-login-card" onSubmit={login}><div className="admin-login-icon"><LockKeyhole size={22} /></div><h2>Sign in</h2><label htmlFor="admin-id">Admin ID</label><input id="admin-id" autoComplete="username" value={adminId} onChange={(event) => setAdminId(event.target.value)} placeholder="Enter admin ID" /><label htmlFor="admin-password">Password</label><input id="admin-password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter password" />{loginError && <span className="field-error">{loginError}</span>}<button className="btn btn-teal" type="submit">Enter admin portal <ArrowRight size={15} /></button></form></div>}</div></main><Footer /></div>;
+}
+
 function Router() {
-  return <ErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/appointment" component={AppointmentPage} /><Route path="/specialities/:slug" component={SpecialtyPage} /><Route><NotFound /></Route></Switch></ErrorBoundary>;
+  return <ErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/appointment" component={AppointmentPage} /><Route path="/specialities" component={SpecialitiesPage} /><Route path="/admin" component={AdminPage} /><Route><NotFound /></Route></Switch></ErrorBoundary>;
 }
 
 function NotFound() {
