@@ -149,8 +149,8 @@ a { color: inherit; text-decoration: none; }
 .service-card:nth-child(3n+2) .service-icon { background:#faedcf; color:#c57d1d; }
 .service-card:nth-child(3n) .service-icon { background:#f3dfdc; color:#be6257; }
 .service-card h3 { margin:0 0 8px; color:#1c5260; font:700 18px var(--app-font-serif); }
-.service-card p { margin:0; color:#6d7f80; font-size:13px; line-height:1.55; }
-.service-card .arrow { position:absolute; right:22px; bottom:22px; color:#1d7780; }
+.learn-more { color:#1d7780; display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:800; margin-top:28px; }
+.learn-more:hover { color:#d28b28; }
 
 .care-layout { display:grid; grid-template-columns: .82fr 1.18fr; gap:68px; align-items:center; }
 .doctor-collage { min-height:385px; position:relative; }
@@ -166,6 +166,12 @@ a { color: inherit; text-decoration: none; }
 .stat-row { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; padding-top:24px; border-top:1px solid #d6e4df; }
 .stat strong { display:block; color:#17566a; font:800 25px var(--app-font-serif); }
 .stat span { color:#738789; font-size:11px; }
+
+.insurance-section { background:#fffdf9; }
+.insurance-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.insurance-card { min-height:88px; display:flex; align-items:center; justify-content:center; gap:10px; padding:16px; border:1px solid #dce8e3; border-radius:16px; background:#f8fbf8; color:#1d5967; font-size:13px; font-weight:800; text-align:center; transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.insurance-card:hover { transform:translateY(-3px); border-color:#a9cfc6; box-shadow:0 10px 24px rgba(36,89,91,.08); }
+.insurance-card svg { color:#d79430; flex-shrink:0; }
 
 .doctors-grid { display:grid; grid-template-columns:1.18fr .82fr .82fr; gap:14px; }
 .doctor-card { background:#fffdf9; border-radius:20px; border:1px solid #dce8e3; overflow:hidden; position:relative; transition:transform .25s ease, box-shadow .25s ease; }
@@ -238,6 +244,16 @@ a { color: inherit; text-decoration: none; }
 .appointment-page .booking-card { max-width:650px; margin:0 auto; }
 .appointment-back { color:#1d7780; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:7px; margin-bottom:25px; }
 .appointment-back:hover { color:#d28b28; }
+.specialty-page { padding:62px 0 90px; }
+.specialty-hero { display:grid; grid-template-columns:1.1fr .9fr; gap:70px; align-items:center; padding:42px 0 25px; }
+.specialty-hero .service-icon { width:58px; height:58px; margin-bottom:25px; }
+.specialty-hero h1 { margin:12px 0 18px; color:#154b5b; font:800 clamp(40px,6vw,66px)/.98 var(--app-font-serif); letter-spacing:-.07em; }
+.specialty-hero p { max-width:560px; color:#637a7e; font-size:16px; line-height:1.7; margin:0 0 28px; }
+.specialty-panel { background:#154b5b; color:#fff; border-radius:24px; padding:30px; box-shadow:16px 18px 0 rgba(211,162,73,.18); }
+.specialty-panel > span { color:#f0c675; font-size:11px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+.specialty-panel ul { list-style:none; padding:0; margin:23px 0 0; display:grid; gap:15px; }
+.specialty-panel li { display:flex; align-items:center; gap:10px; color:#d9eeeb; font-size:14px; }
+.specialty-panel li svg { color:#f0b047; background:rgba(240,176,71,.14); border-radius:50%; padding:3px; }
 
 .reveal { animation:rise .7s ease both; }
 .delay-1 { animation-delay:.1s; } .delay-2 { animation-delay:.2s; } .delay-3 { animation-delay:.3s; }
@@ -253,6 +269,7 @@ a { color: inherit; text-decoration: none; }
   .doctor-card.featured { grid-column:1/-1; }
   .contact-panel { grid-template-columns:1fr; }
   .contact-actions { justify-content:flex-start; }
+  .specialty-hero { grid-template-columns:1fr; gap:35px; }
 }
 @media (max-width: 700px) {
   .container { width:min(100% - 28px, 1180px); }
@@ -278,7 +295,7 @@ a { color: inherit; text-decoration: none; }
   .trust-item span { font-size:10px; }
   .section { padding:62px 0; }
   .section-head { align-items:flex-start; flex-direction:column; }
-  .services-grid, .doctors-grid, .testimonials { grid-template-columns:1fr; }
+  .services-grid, .doctors-grid, .testimonials, .insurance-grid { grid-template-columns:1fr; }
   .doctor-card.featured { grid-template-columns:1fr 1fr; grid-column:auto; }
   .doctor-card.featured img { min-height:220px; }
   .care-layout { gap:34px; }
@@ -291,4 +308,5 @@ a { color: inherit; text-decoration: none; }
   .booking-form { grid-template-columns:1fr; }
   .field.full, .booking-submit, .form-footnote { grid-column:auto; }
   .appointment-hero { padding:35px 0 55px; }
+  .specialty-page { padding:35px 0 55px; }
 }

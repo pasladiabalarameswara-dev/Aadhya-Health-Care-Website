@@ -10,7 +10,6 @@ import {
   Bed,
   CalendarDays,
   Check,
-  ChevronRight,
   Clock3,
   HeartHandshake,
   HeartPulse,
@@ -25,25 +24,21 @@ import {
   UsersRound,
   X,
 } from 'lucide-react';
-import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
+ import { Link, Route, Switch, useLocation, useRoute, Router as WouterRouter } from 'wouter';
 import './index.css';
 
 const queryClient = new QueryClient();
 
 const services = [
-  { title: 'General Medicine', copy: 'Thoughtful care for everyday health, chronic conditions, and the questions in between.', icon: Stethoscope },
-  { title: 'Cardiology', copy: 'Heart care built around early answers, advanced diagnostics, and lasting confidence.', icon: HeartPulse },
-  { title: 'Orthopaedics', copy: 'Move with less pain through expert bone, joint, spine, and rehabilitation care.', icon: Bed },
-  { title: 'Paediatrics', copy: 'Gentle, reassuring care for growing bodies, from the first check-up onward.', icon: Baby },
-  { title: 'Women’s Health', copy: 'A private, supportive space for complete health across every life stage.', icon: HeartHandshake },
-  { title: 'Emergency Care', copy: 'A calm, capable team available around the clock when every minute matters.', icon: Syringe },
+  { slug: 'general-medicine', title: 'General Medicine', copy: 'Thoughtful care for everyday health, chronic conditions, and the questions in between.', icon: Stethoscope, detail: 'Personalised primary care for everyday concerns, long-term conditions, preventive screenings, and the questions that do not always fit neatly into one diagnosis.', highlights: ['Routine health checks', 'Diabetes and blood pressure care', 'Preventive screening guidance'] },
+  { slug: 'cardiology', title: 'Cardiology', copy: 'Heart care built around early answers, advanced diagnostics, and lasting confidence.', icon: HeartPulse, detail: 'A calm, coordinated approach to heart health with experienced specialists, clear explanations, and diagnostics that help you make decisions with confidence.', highlights: ['Heart health assessments', 'ECG and diagnostic support', 'Preventive cardiac care'] },
+  { slug: 'orthopaedics', title: 'Orthopaedics', copy: 'Move with less pain through expert bone, joint, spine, and rehabilitation care.', icon: Bed, detail: 'From an everyday injury to ongoing joint or spine discomfort, our orthopaedic team helps you move forward with thoughtful evaluation and practical recovery plans.', highlights: ['Bone and joint consultations', 'Spine and sports injury care', 'Rehabilitation guidance'] },
+  { slug: 'paediatrics', title: 'Paediatrics', copy: 'Gentle, reassuring care for growing bodies, from the first check-up onward.', icon: Baby, detail: 'Warm, age-appropriate care for children and growing families, with room for every question from first check-ups through adolescence.', highlights: ['Child wellness visits', 'Newborn and infant care', 'Growth and development support'] },
+  { slug: 'womens-health', title: 'Women’s Health', copy: 'A private, supportive space for complete health across every life stage.', icon: HeartHandshake, detail: 'Respectful, private support for women through changing health needs, with clear guidance and a team that listens without rushing.', highlights: ['Women’s wellness consultations', 'Preventive screenings', 'Life-stage health guidance'] },
+  { slug: 'emergency-care', title: 'Emergency Care', copy: 'A calm, capable team available around the clock when every minute matters.', icon: Syringe, detail: 'Round-the-clock emergency support for urgent needs, with a calm first response and connected hospital care when every minute matters.', highlights: ['24/7 emergency response', 'Urgent assessment and triage', 'Connected diagnostics and care'] },
 ];
 
-const doctors = [
-  { name: 'Dr. Meera Iyer', speciality: 'Consultant Physician', photo: '/doctor-portrait.png', tags: ['Internal Medicine', 'Diabetes Care'] },
-  { name: 'Dr. Arjun Rao', speciality: 'Senior Cardiologist', photo: '/doctor-portrait.png', tags: ['Heart Health', 'Preventive Care'] },
-  { name: 'Dr. Kavya Menon', speciality: 'Paediatrician', photo: '/doctor-portrait.png', tags: ['Child Wellness', 'Newborn Care'] },
-];
+const insurancePartners = ['HDFC ERGO', 'Star Health', 'Care Health', 'Niva Bupa', 'ICICI Lombard', 'Bajaj Allianz', 'Aditya Birla Health', 'ManipalCigna'];
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -68,7 +63,6 @@ function Header() {
           <nav className={`nav-links ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">
             <a href="/#about" onClick={closeMenu}>About us</a>
             <a href="/#services" onClick={closeMenu}>Specialities</a>
-            <a href="/#doctors" onClick={closeMenu}>Our doctors</a>
             <a href="/#stories" onClick={closeMenu}>Patient stories</a>
             <a href="/#contact" onClick={closeMenu}>Contact</a>
           </nav>
@@ -133,25 +127,29 @@ function Hero() {
       <div className="hero-ctas"><Link href="/appointment" className="btn btn-primary">Find your care team <ArrowRight size={16} /></Link><a href="tel:+917337335096" className="btn btn-outline"><Phone size={16} /> Talk to a coordinator</a></div>
       <div className="hero-note"><ShieldCheck size={16} /> Trusted care for families across Naigaon and beyond</div>
     </div>
-    <div className="hero-visual reveal delay-1"><img className="building-image" src="/hospital-building.png" alt="Aadhya Health Care hospital exterior" /><div className="emergency-pill">24/7 <span>Emergency support</span></div><div className="visual-badge"><HeartPulse size={22} /><div><strong>20+</strong><span>specialities under one roof</span></div></div></div>
+    <div className="hero-visual reveal delay-1"><img className="building-image" src="/hospital-building-replacement.png" alt="Aadhya Health Care hospital exterior" /><div className="emergency-pill">24/7 <span>Emergency support</span></div><div className="visual-badge"><HeartPulse size={22} /><div><strong>20+</strong><span>specialities under one roof</span></div></div></div>
   </div></section>;
 }
 
 function Services() {
-  return <section className="section section-tint" id="services"><div className="container"><div className="section-head"><div><div className="section-kicker">Care for every chapter</div><h2>Specialities that listen first.</h2></div><p className="section-intro">From a reassuring first consultation to complex treatment, our teams work together around the person — not just the diagnosis.</p></div><div className="services-grid">{services.map(({ title, copy, icon: Icon }, index) => <article className="service-card reveal" style={{ animationDelay: `${index * 70}ms` }} key={title}><div className="service-icon"><Icon size={22} /></div><h3>{title}</h3><p>{copy}</p><ChevronRight className="arrow" size={17} /></article>)}</div></div></section>;
+  return <section className="section section-tint" id="services"><div className="container"><div className="section-head"><div><div className="section-kicker">Care for every chapter</div><h2>Specialities that listen first.</h2></div><p className="section-intro">Explore the care areas available at Aadhya, then learn more about the support each team provides.</p></div><div className="services-grid">{services.map(({ title, icon: Icon, slug }, index) => <article className="service-card reveal" style={{ animationDelay: `${index * 70}ms` }} key={title}><div className="service-icon"><Icon size={22} /></div><h3>{title}</h3><Link className="learn-more" href={`/specialities/${slug}`}>Learn more <ArrowRight size={15} /></Link></article>)}</div></div></section>;
 }
 
-function About() {
-  return <section className="section" id="about"><div className="container care-layout"><div className="doctor-collage"><img src="/doctor-portrait.png" className="doctor-photo" alt="Aadhya Health Care doctor smiling in a hospital corridor" /><div className="experience-card"><strong>15 yrs</strong><span>of showing up for families</span></div></div><div className="care-copy"><div className="section-kicker">The Aadhya difference</div><h2>Clinical clarity. Human warmth.</h2><p>Hospitals can feel overwhelming. We designed Aadhya to feel different: bright spaces, clear communication, and a team that makes room for your questions.</p><ul className="check-list"><li><Check size={16} /> Senior doctors who take the time to understand</li><li><Check size={16} /> Diagnostics and treatment connected in one place</li><li><Check size={16} /> Transparent guidance before, during, and after care</li></ul><Link className="btn btn-teal" href="/appointment">Meet your care team <ArrowRight size={15} /></Link><div className="stat-row"><div className="stat"><strong>20k+</strong><span>families cared for</span></div><div className="stat"><strong>4.8/5</strong><span>patient experience</span></div><div className="stat"><strong>24/7</strong><span>emergency response</span></div></div></div></div></section>;
-}
-
-function Doctors() {
-  return <section className="section section-tint" id="doctors"><div className="container"><div className="section-head"><div><div className="section-kicker">The people behind the care</div><h2>Our care team.</h2></div><p className="section-intro">Experienced specialists, thoughtful nurses, and a front desk that knows your name — here to make the next step feel easier.</p></div><div className="doctors-grid">{doctors.map((doctor, index) => <article className={`doctor-card ${index === 0 ? 'featured' : ''}`} key={doctor.name}><img src={doctor.photo} alt={doctor.name} /><div className="doctor-info"><h3>{doctor.name}</h3><p>{doctor.speciality}</p><div className="doctor-tags">{doctor.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div></div></article>)}</div></div></section>;
+function InsurancePartners() {
+  return <section className="section insurance-section" id="insurance"><div className="container"><div className="section-head"><div><div className="section-kicker">Cashless care, made easier</div><h2>Cashless insurance partners.</h2></div><p className="section-intro">We work with leading health insurance providers to help make your hospital journey simpler from the start.</p></div><div className="insurance-grid">{insurancePartners.map((partner) => <div className="insurance-card" key={partner}><ShieldCheck size={18} /><span>{partner}</span></div>)}</div></div></section>;
 }
 
 function Stories() {
   const stories = [{ quote: 'The doctors explained everything without rushing us. It made a difficult week feel manageable.', name: 'Nandita P.', detail: 'Patient family · Cardiology' }, { quote: 'From the first phone call to going home, every person we met was kind, clear, and genuinely present.', name: 'Rohan S.', detail: 'Patient · General Medicine' }];
   return <section className="section" id="stories"><div className="container"><div className="section-head"><div><div className="section-kicker">In their own words</div><h2>Care you can feel.</h2></div><p className="section-intro">Trust is built in small moments — a clear answer, an extra minute, a hand held when it matters.</p></div><div className="testimonials">{stories.map((story) => <article className="quote-card" key={story.name}><div className="stars">★★★★★</div><p>“{story.quote}”</p><footer><span className="quote-avatar">{story.name[0]}</span><div><strong>{story.name}</strong><small>{story.detail}</small></div></footer></article>)}</div></div></section>;
+}
+
+function SpecialtyPage() {
+  const [, params] = useRoute('/specialities/:slug');
+  const service = services.find((item) => item.slug === params?.slug);
+  if (!service) return <NotFound />;
+  const Icon = service.icon;
+  return <div className="appointment-page"><Header /><main className="specialty-page"><div className="container"><Link href="/" className="appointment-back"><ArrowLeft size={15} /> Back to Aadhya Health Care</Link><div className="specialty-hero"><div><div className="service-icon"><Icon size={25} /></div><div className="section-kicker">Aadhya speciality care</div><h1>{service.title}</h1><p>{service.detail}</p><Link href="/appointment" className="btn btn-primary">Book an appointment <ArrowRight size={16} /></Link></div><div className="specialty-panel"><span>What we help with</span><ul>{service.highlights.map((highlight) => <li key={highlight}><Check size={16} />{highlight}</li>)}</ul></div></div></div></main><Footer /></div>;
 }
 
 function AppointmentBand() {
@@ -163,11 +161,11 @@ function Contact() {
 }
 
 function Footer() {
-  return <footer className="footer"><div className="container"><div className="footer-grid"><div><Link href="/" className="brand"><span className="brand-mark">A</span><span className="brand-copy"><strong>AADHYA</strong><small>HEALTH CARE</small></span></Link><p>Modern multi-specialty care with a human heart, close to home.</p></div><div><h4>Explore</h4><ul><li><a href="/#about">About Aadhya</a></li><li><a href="/#services">Specialities</a></li><li><a href="/#doctors">Our doctors</a></li><li><a href="/#stories">Patient stories</a></li></ul></div><div><h4>Patients</h4><ul><li><Link href="/appointment">Book an appointment</Link></li><li><a href="tel:+917337335096">Emergency support</a></li><li><a href="/#contact">Find us</a></li></ul></div><div><h4>Get in touch</h4><div className="footer-contact"><MapPin size={15} />8-2-277, Airsft Colony,<br />Naigaon - 500891</div><div className="footer-contact"><Phone size={15} /><a href="tel:+917337335096">+91 73373 35096</a></div><div className="footer-contact"><Mail size={15} /><a href="mailto:care@aadhyahealthcare.in">care@aadhyahealthcare.in</a></div></div></div><div className="footer-bottom"><span>© 2025 Aadhya Health Care. Care, close to home.</span><span>Privacy · Terms</span></div></div></footer>;
+  return <footer className="footer"><div className="container"><div className="footer-grid"><div><Link href="/" className="brand"><span className="brand-mark">A</span><span className="brand-copy"><strong>AADHYA</strong><small>HEALTH CARE</small></span></Link><p>Modern multi-specialty care close to home.</p></div><div><h4>Explore</h4><ul><li><a href="/#services">Specialities</a></li><li><a href="/#insurance">Insurance partners</a></li><li><a href="/#stories">Patient stories</a></li></ul></div><div><h4>Patients</h4><ul><li><Link href="/appointment">Book an appointment</Link></li><li><a href="tel:+917337335096">Emergency support</a></li><li><a href="/#contact">Find us</a></li></ul></div><div><h4>Get in touch</h4><div className="footer-contact"><MapPin size={15} />8-2-277, Airsft Colony,<br />Naigaon - 500891</div><div className="footer-contact"><Phone size={15} /><a href="tel:+917337335096">+91 73373 35096</a></div><div className="footer-contact"><Mail size={15} /><a href="mailto:care@aadhyahealthcare.in">care@aadhyahealthcare.in</a></div></div></div><div className="footer-bottom"><span>© 2025 Aadhya Health Care. Care, close to home.</span><span>Privacy · Terms</span></div></div></footer>;
 }
 
 function Home() {
-  return <div className="site-shell"><Header /><main><Hero /><TrustStrip /><Services /><About /><Doctors /><Stories /><AppointmentBand /><Contact /></main><Footer /></div>;
+  return <div className="site-shell"><Header /><main><Hero /><TrustStrip /><Services /><InsurancePartners /><Stories /><AppointmentBand /><Contact /></main><Footer /></div>;
 }
 
 function AppointmentPage() {
@@ -175,7 +173,7 @@ function AppointmentPage() {
 }
 
 function Router() {
-  return <ErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/appointment" component={AppointmentPage} /><Route><NotFound /></Route></Switch></ErrorBoundary>;
+  return <ErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/appointment" component={AppointmentPage} /><Route path="/specialities/:slug" component={SpecialtyPage} /><Route><NotFound /></Route></Switch></ErrorBoundary>;
 }
 
 function NotFound() {
