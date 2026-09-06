@@ -1,0 +1,1 @@
+- [Branded image quality](image-quality.md) — use fidelity-safe upscaling when logos and text must remain exact.

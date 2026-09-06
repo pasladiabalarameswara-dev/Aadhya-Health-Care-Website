@@ -152,7 +152,7 @@ function Hero() {
        <div className="hero-ctas"><Link href="/appointment" className="btn btn-primary">Book a consultation <ArrowRight size={16} /></Link><a href="tel:+917337335096" className="btn btn-outline"><Phone size={16} /> Talk to a coordinator</a></div>
       <div className="hero-note"><ShieldCheck size={16} /> Trusted care for families across Naigaon and beyond</div>
     </div>
-     <div className="hero-visual reveal delay-1"><img className="building-image" src="/aadhya-hospital-upload.jpg" alt="Aadhya Health Care and Greenlands Hospital exterior" /><div className="emergency-pill">24/7 <span>Emergency support</span></div><div className="visual-badge"><HeartPulse size={22} /><div><strong>20+</strong><span>specialities under one roof</span></div></div></div>
+     <div className="hero-visual reveal delay-1"><img className="building-image" src="/aadhya-hospital-hd.jpg" alt="Aadhya Health Care and Greenlands Hospital exterior" /><div className="emergency-pill">24/7 <span>Emergency support</span></div><div className="visual-badge"><HeartPulse size={22} /><div><strong>20+</strong><span>specialities under one roof</span></div></div></div>
   </div></section>;
 }
 
@@ -161,7 +161,7 @@ function Services() {
 }
 
 function InsurancePartners() {
-  return <section className="insurance-image-section" id="insurance"><div className="container"><img src="/cashless-insurance-partners.jpg" alt="Cashless insurance partners" /></div></section>;
+  return <section className="insurance-image-section" id="insurance"><div className="container"><img src="/cashless-insurance-partners-hd.jpg" alt="Cashless insurance partners" /></div></section>;
 }
 
 function Stories() {
