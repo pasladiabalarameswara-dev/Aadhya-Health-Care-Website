@@ -1,1 +1,2 @@
 - [Branded image quality](image-quality.md) — use fidelity-safe upscaling when logos and text must remain exact.
+- [Netlify static builds](netlify-static-build.md) — default Vite port/base values and ship an SPA fallback for external static hosts.
